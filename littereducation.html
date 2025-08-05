@@ -1,0 +1,1642 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aku Pahlawan Bumi: Petualangan Sampah Cerdas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Fredoka+One:wght@400&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary-green: #10b981;
+            --primary-blue: #3b82f6;
+            --primary-purple: #8b5cf6;
+            --primary-orange: #f59e0b;
+            --primary-pink: #ec4899;
+            --bg-cream: #fef7ed;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #fef7ed 0%, #f0f9ff 100%);
+            color: #374151;
+            overflow-x: hidden;
+        }
+
+        .hero-title {
+            font-family: 'Fredoka One', cursive;
+            background: linear-gradient(45deg, #10b981, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: rainbow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes rainbow {
+            0% {
+                filter: hue-rotate(0deg);
+            }
+
+            100% {
+                filter: hue-rotate(360deg);
+            }
+        }
+
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .bouncing {
+            animation: bounce 2s infinite;
+        }
+
+        .pulse-glow {
+            animation: pulse-glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            from {
+                box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+            }
+
+            to {
+                box-shadow: 0 0 40px rgba(16, 185, 129, 0.8);
+            }
+        }
+
+        .card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .card:hover::before {
+            left: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .game-item {
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .game-item:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .game-item.selected {
+            transform: scale(1.2) rotate(10deg);
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.8);
+            border-color: #3b82f6;
+            background: linear-gradient(45deg, #dbeafe, #bfdbfe);
+        }
+
+        .bin {
+            transition: all 0.3s ease-in-out;
+            border-style: dashed;
+            position: relative;
+        }
+
+        /* New hover animation for the bins */
+        .bin:not(.highlight):hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(139, 92, 246, 0.6);
+            border-color: var(--primary-purple);
+        }
+
+        .bin.highlight {
+            transform: scale(1.1);
+            border-color: #22c55e;
+            background: linear-gradient(45deg, #dcfce7, #bbf7d0);
+            animation: wiggle 0.5s ease-in-out;
+        }
+
+        @keyframes wiggle {
+
+            0%,
+            100% {
+                transform: scale(1.1) rotate(0deg);
+            }
+
+            25% {
+                transform: scale(1.1) rotate(-3deg);
+            }
+
+            75% {
+                transform: scale(1.1) rotate(3deg);
+            }
+        }
+
+        .tab-btn {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .progress-bar-container {
+            background-color: #e5e7eb;
+            border-radius: 9999px;
+            height: 1rem;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #3b82f6, #8b5cf6, #f59e0b);
+            border-radius: 9999px;
+            transition: width 0.5s ease-in-out;
+            background-size: 200% 200%;
+            animation: progress-shine 2s ease-in-out infinite;
+        }
+
+        @keyframes progress-shine {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        .music-control {
+            position: fixed;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            z-index: 1000;
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .music-control:hover {
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .star-field {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .star {
+            position: absolute;
+            background: #fbbf24;
+            border-radius: 50%;
+            animation: twinkle 3s ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+
+            0%,
+            100% {
+                opacity: 0.3;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+        .level-badge {
+            background: linear-gradient(45deg, #f59e0b, #f97316);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        .celebration {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2000;
+            font-size: 2rem;
+            font-weight: bold;
+            padding: 20px 40px;
+            background: linear-gradient(45deg, rgba(255, 255, 255, 0.95), rgba(230, 240, 255, 0.95));
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            color: #3b82f6;
+            animation: celebrate 2.5s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes celebrate {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+
+            50% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .nav-link {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #10b981, #3b82f6);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+
+        .memory-game-card {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer;
+        }
+
+        .memory-game-card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .memory-game-card .front,
+        .memory-game-card .back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            font-size: 2.5rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .memory-game-card .front {
+            background: linear-gradient(45deg, #ddd6fe, #c7d2fe);
+            color: #6d28d9;
+        }
+
+        .memory-game-card .back {
+            background: linear-gradient(45deg, #fef3c7, #fde68a);
+            transform: rotateY(180deg);
+        }
+
+        .memory-game-card.matched {
+            transform: rotateY(180deg) scale(0.95);
+            opacity: 0.6;
+            cursor: default;
+        }
+
+        input[type="checkbox"] {
+            appearance: none;
+            background-color: #fff;
+            margin: 0;
+            font: inherit;
+            color: currentColor;
+            width: 1.5em;
+            height: 1.5em;
+            border: 0.15em solid currentColor;
+            border-radius: 0.35em;
+            transform: translateY(-0.075em);
+            display: grid;
+            place-content: center;
+            cursor: pointer;
+        }
+
+        input[type="checkbox"]::before {
+            content: "";
+            width: 0.8em;
+            height: 0.8em;
+            transform: scale(0);
+            transition: 120ms transform ease-in-out;
+            box-shadow: inset 1em 1em var(--primary-green);
+            transform-origin: bottom left;
+            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+        }
+
+        input[type="checkbox"]:checked::before {
+            transform: scale(1);
+        }
+
+        .gemini-feature-box {
+            border: 2px dashed var(--primary-purple);
+            background-color: #f5f3ff;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--primary-purple);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .tts-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: transform 0.2s;
+        }
+
+        .tts-button:hover {
+            transform: scale(1.2);
+        }
+
+        .tts-button.loading {
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Star Field Background -->
+    <div class="star-field" id="starField"></div>
+
+    <!-- Music Control -->
+    <div class="music-control" id="musicControl" title="Toggle Music">
+        <span id="musicIcon" class="text-3xl">🔇</span>
+    </div>
+
+    <header class="bg-white/90 backdrop-blur-lg shadow-lg sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-2xl md:text-3xl font-bold">
+                <span class="hero-title">Pahlawan Bumi</span>
+                <span class="text-2xl">🌍✨</span>
+            </h1>
+            <div class="hidden md:flex space-x-8">
+                <a href="#materi1" class="nav-link font-semibold text-gray-700 hover:text-green-600">🗑️ Masalah
+                    Sampah</a>
+                <a href="#materi2" class="nav-link font-semibold text-gray-700 hover:text-blue-600">🔍 Jenis Sampah</a>
+                <a href="#materi3" class="nav-link font-semibold text-gray-700 hover:text-purple-600">♻️ Jurus 3R</a>
+                <a href="#materi4" class="nav-link font-semibold text-gray-700 hover:text-orange-600">🚀 Ayo
+                    Beraksi!</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-md bg-green-100 hover:bg-green-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4 bg-white/95">
+            <div class="flex flex-col space-y-3">
+                <a href="#materi1" class="nav-link font-semibold text-gray-700 py-2">🗑️ Masalah Sampah</a>
+                <a href="#materi2" class="nav-link font-semibold text-gray-700 py-2">🔍 Jenis Sampah</a>
+                <a href="#materi3" class="nav-link font-semibold text-gray-700 py-2">♻️ Jurus 3R</a>
+                <a href="#materi4" class="nav-link font-semibold text-gray-700 py-2">🚀 Ayo Beraksi!</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="hero" class="py-20 px-4 relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-br from-green-100 via-blue-50 to-purple-100 opacity-50"></div>
+            <div class="container mx-auto text-center relative z-10">
+                <h2 class="hero-title text-5xl md:text-7xl font-bold mb-6 floating">
+                    Aku Pahlawan Bumi! 🦸‍♀️🦸‍♂️
+                </h2>
+                <p class="text-xl md:text-2xl text-gray-700 max-w-4xl mx-auto mb-8">
+                    🌟 Selamat datang, Pahlawan Cilik! Ayo mulai petualangan seru untuk menyelamatkan planet kita dari
+                    sampah! 🌟
+                </p>
+                <div class="flex justify-center space-x-4 mb-8 text-4xl">
+                    <div class="floating" style="animation-delay: 0.5s;">🌱</div>
+                    <div class="floating" style="animation-delay: 1s;">♻️</div>
+                    <div class="floating" style="animation-delay: 1.5s;">🌍</div>
+                    <div class="floating" style="animation-delay: 2s;">⭐</div>
+                </div>
+                <button onclick="document.getElementById('materi1').scrollIntoView({behavior: 'smooth'})"
+                    class="bg-gradient-to-r from-green-500 to-blue-500 text-white px-8 py-4 rounded-full text-xl font-bold pulse-glow hover:scale-110 transition-transform">
+                    🚀 Mulai Petualangan!
+                </button>
+            </div>
+        </section>
+
+        <!-- Material 1: Waste Problem -->
+        <section id="materi1" class="py-16 md:py-24 px-4 relative">
+            <div class="absolute inset-0 bg-gradient-to-br from-blue-50 to-cyan-50 opacity-60"></div>
+            <div class="container mx-auto relative z-10">
+                <div class="text-center mb-12">
+                    <div class="level-badge inline-block mb-4">Level 1 🎯</div>
+                    <h3 class="text-4xl md:text-5xl font-bold text-blue-800 mb-4">
+                        🗑️ Sampah Itu Apa, Sih?
+                    </h3>
+                    <p class="text-xl text-gray-700 max-w-4xl mx-auto">
+                        Setiap hari kita menghasilkan sampah. Tapi, pernahkah kamu bayangkan ke mana semua sampah itu
+                        pergi? 🤔
+                    </p>
+                </div>
+
+                <div class="flex flex-col lg:flex-row items-center gap-12">
+                    <div class="lg:w-1/2">
+                        <div class="card bg-white p-8 rounded-2xl shadow-2xl">
+                            <div class="text-center mb-6">
+                                <div class="text-8xl mb-4">🏔️</div>
+                                <h4 class="text-3xl font-bold text-red-600 mb-4">Cerita Si Gunung Sampah Raksasa</h4>
+                            </div>
+                            <p class="text-gray-700 mb-6 text-lg leading-relaxed">
+                                Semua sampah dari kota kita berkumpul di satu tempat dan menjadi gunung sampah yang
+                                sangat besar!
+                                Gunung ini bisa menyebabkan bau busuk 🤢, banjir 🌊, dan penyakit 🦠.
+                                Ini adalah masalah besar yang harus kita selesaikan bersama! 💪
+                            </p>
+                            <div class="bg-gradient-to-r from-red-100 to-orange-100 p-4 rounded-lg">
+                                <p class="text-red-800 font-semibold">
+                                    ⚠️ Fakta Mengejutkan: Setiap orang menghasilkan sekitar 0.7 kg sampah per hari!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="lg:w-1/2">
+                        <div class="card bg-white p-8 rounded-2xl shadow-2xl">
+                            <h5 class="text-2xl font-bold text-center mb-6 text-purple-800">😱 Wow! Sebanyak Ini Sampah
+                                Kita!</h5>
+                            <div class="chart-container relative mx-auto mb-6" style="height: 300px;">
+                                <canvas id="wasteChart"></canvas>
+                            </div>
+                            <p class="text-center text-gray-600 italic">Arahkan kursor ke grafik untuk lihat fakta seru!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Material 2: Waste Types & Enhanced Games -->
+        <section id="materi2" class="py-16 md:py-24 px-4 relative">
+            <div class="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50 opacity-60"></div>
+            <div class="container mx-auto relative z-10">
+                <div class="text-center mb-12">
+                    <div class="level-badge inline-block mb-4">Level 2 🎮</div>
+                    <h3 class="text-4xl md:text-5xl font-bold text-green-800 mb-4">
+                        🔍 Kenalan dengan "Geng Sampah"
+                    </h3>
+                    <p class="text-xl text-gray-700 max-w-4xl mx-auto">
+                        Untuk jadi pahlawan, kita harus kenal jenis-jenis sampah. Ayo kita bedah "Geng Sampah"! 🕵️‍♀️
+                    </p>
+                </div>
+
+                <!-- Waste Types Cards -->
+                <div class="grid md:grid-cols-3 gap-8 mb-12">
+                    <div
+                        class="card bg-gradient-to-br from-green-100 to-green-200 p-8 rounded-2xl text-center border-4 border-green-400 shadow-2xl">
+                        <div class="text-8xl mb-4 bouncing">🍃</div>
+                        <h4 class="text-3xl font-bold text-green-800 mb-2">Geng ORGANIK</h4>
+                        <p class="text-green-700 text-lg leading-relaxed">
+                            Berasal dari alam (sisa makanan, daun). Mereka bisa membusuk dan jadi pupuk! 🌱
+                        </p>
+                        <div class="mt-4 text-sm text-green-600 font-semibold">
+                            ✨ Bisa jadi kompos dalam 2-3 bulan!
+                        </div>
+                    </div>
+
+                    <div
+                        class="card bg-gradient-to-br from-blue-100 to-blue-200 p-8 rounded-2xl text-center border-4 border-blue-400 shadow-2xl">
+                        <div class="text-8xl mb-4 bouncing" style="animation-delay: 0.5s;">🤖</div>
+                        <h4 class="text-3xl font-bold text-blue-800 mb-2">Geng ANORGANIK</h4>
+                        <p class="text-blue-700 text-lg leading-relaxed">
+                            Buatan pabrik (plastik, kaleng). Sulit hancur tapi bisa didaur ulang! ♻️
+                        </p>
+                        <div class="mt-4 text-sm text-blue-600 font-semibold">
+                            ⚡ Plastik butuh 500+ tahun untuk hancur!
+                        </div>
+                    </div>
+
+                    <div
+                        class="card bg-gradient-to-br from-red-100 to-red-200 p-8 rounded-2xl text-center border-4 border-red-400 shadow-2xl">
+                        <div class="text-8xl mb-4 bouncing" style="animation-delay: 1s;">☠️</div>
+                        <h4 class="text-3xl font-bold text-red-800 mb-2">Geng B3</h4>
+                        <p class="text-red-700 text-lg leading-relaxed">
+                            Berbahaya & Beracun (baterai, obat). Harus ditangani secara khusus! ⚠️
+                        </p>
+                        <div class="mt-4 text-sm text-red-600 font-semibold">
+                            🚨 Jangan dibuang sembarangan!
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enhanced Sorting Game -->
+                <div class="bg-white p-8 md:p-12 rounded-3xl shadow-2xl mb-12">
+                    <div class="text-center mb-8">
+                        <h4 class="text-3xl font-bold mb-2">🎯 Game Pilah Sampah Super!</h4>
+                        <p class="text-gray-600 text-lg">Klik gambar sampah, lalu klik tempat sampah yang benar!</p>
+                        <div class="flex justify-center items-center space-x-6 mt-4">
+                            <div class="text-lg font-semibold text-purple-600">
+                                Streak: <span id="streakCounter">0</span> 🔥
+                            </div>
+                            <div class="text-lg font-semibold text-blue-600">
+                                Waktu: <span id="timeCounter">60</span>s ⏰
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="game-feedback" class="text-center font-bold text-3xl mb-6 h-12"></div>
+                    <div class="progress-bar-container mb-8">
+                        <div class="progress-bar" id="gameProgressBar"></div>
+                    </div>
+                    <div class="flex flex-wrap justify-center gap-4 mb-8 min-h-[150px]" id="game-items"></div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="game-bins">
+                        <div class="bin border-4 border-green-400 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-6 text-center"
+                            data-type="organik">
+                            <div class="text-8xl mb-2">♻️</div>
+                            <p class="font-bold text-2xl text-green-800">ORGANIK</p>
+                            <p class="text-green-600 mt-2">Sisa makanan & tumbuhan 🌿</p>
+                        </div>
+                        <div class="bin border-4 border-blue-400 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 text-center"
+                            data-type="anorganik">
+                            <div class="text-8xl mb-2">🔩</div>
+                            <p class="font-bold text-2xl text-blue-800">ANORGANIK</p>
+                            <p class="text-blue-600 mt-2">Plastik, kaleng & kertas 📦</p>
+                        </div>
+                        <div class="bin border-4 border-red-400 bg-gradient-to-br from-red-50 to-red-100 rounded-2xl p-6 text-center"
+                            data-type="b3">
+                            <div class="text-8xl mb-2">☣️</div>
+                            <p class="font-bold text-2xl text-red-800">B3</p>
+                            <p class="text-red-600 mt-2">Berbahaya & beracun ⚠️</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Memory Game -->
+                <div class="bg-white p-8 md:p-12 rounded-3xl shadow-2xl">
+                    <div class="text-center mb-8">
+                        <h4 class="text-3xl font-bold mb-2">🧠 Memory Game Sampah!</h4>
+                        <p class="text-gray-600 text-lg">Cocokkan kartu sampah yang sama!</p>
+                        <div class="flex justify-center items-center space-x-6 mt-4">
+                            <div class="text-lg font-semibold text-purple-600">
+                                Langkah: <span id="memoryMoves">0</span> 👣
+                            </div>
+                            <div class="text-lg font-semibold text-green-600">
+                                Pasangan: <span id="memoryPairs">0</span>/6 💑
+                            </div>
+                        </div>
+                    </div>
+                    <div id="memory-game" class="grid grid-cols-4 sm:grid-cols-6 gap-4 max-w-lg mx-auto"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Material 3: Enhanced 3R Solutions -->
+        <section id="materi3" class="py-16 md:py-24 px-4 relative">
+            <div class="absolute inset-0 bg-gradient-to-br from-purple-50 to-pink-50 opacity-60"></div>
+            <div class="container mx-auto relative z-10">
+                <div class="text-center mb-12">
+                    <div class="level-badge inline-block mb-4">Level 3 💪</div>
+                    <h3 class="text-4xl md:text-5xl font-bold text-purple-800 mb-4">
+                        ♻️ Jurus Sakti Pahlawan Bumi (3R)
+                    </h3>
+                    <p class="text-xl text-gray-700 max-w-4xl mx-auto">
+                        Ini dia 3 jurus andalan untuk mengalahkan si Gunung Sampah! 🥋✨
+                    </p>
+                </div>
+
+                <div class="max-w-6xl mx-auto bg-white rounded-3xl shadow-2xl p-4">
+                    <div class="flex flex-col sm:flex-row justify-center border-b-4 border-gray-200 mb-8">
+                        <button class="tab-btn flex-1 py-4 px-6 font-bold text-xl rounded-t-2xl" data-tab="reduce">
+                            📉 Reduce (Kurangi)
+                        </button>
+                        <button class="tab-btn flex-1 py-4 px-6 font-bold text-xl rounded-t-2xl" data-tab="reuse">
+                            🔄 Reuse (Pakai Lagi)
+                        </button>
+                        <button class="tab-btn flex-1 py-4 px-6 font-bold text-xl rounded-t-2xl" data-tab="recycle">
+                            ♻️ Recycle (Daur Ulang)
+                        </button>
+                    </div>
+                    <div id="tab-content" class="p-4 md:p-8 min-h-[400px]">
+                        <!-- Content will be injected by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Material 4: Enhanced Action Section -->
+        <section id="materi4" class="py-16 md:py-24 px-4 relative">
+            <div class="absolute inset-0 bg-gradient-to-br from-orange-50 to-yellow-50 opacity-60"></div>
+            <div class="container mx-auto text-center relative z-10">
+                <div class="level-badge inline-block mb-4">Level 4 🏆</div>
+                <h3 class="text-4xl md:text-5xl font-bold text-orange-800 mb-4">🚀 Ayo Beraksi, Pahlawan Cilik!</h3>
+                <p class="text-xl text-gray-700 max-w-4xl mx-auto mb-12">
+                    Ilmu sudah didapat, saatnya turun tangan! Inilah misimu untuk menyelamatkan Bumi! 🌍💪
+                </p>
+
+                <div class="flex flex-col lg:flex-row gap-8 mb-16 max-w-6xl mx-auto">
+                    <div
+                        class="card lg:w-1/2 bg-gradient-to-br from-blue-100 to-cyan-100 p-8 rounded-3xl text-left border-4 border-blue-300 shadow-2xl">
+                        <div class="text-center mb-6">
+                            <div class="text-8xl mb-4">🏫</div>
+                            <h4 class="text-3xl font-bold text-blue-800">Misimu di Sekolah</h4>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex items-start space-x-3 bg-white/70 p-4 rounded-xl">
+                                <span class="text-2xl">📦</span>
+                                <div>
+                                    <h5 class="font-bold text-blue-800">Pojok Pilah Sampah</h5>
+                                    <p class="text-blue-700">Buat tempat sampah terpisah di kelas (Organik & Anorganik)
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3 bg-white/70 p-4 rounded-xl">
+                                <span class="text-2xl">🥤</span>
+                                <div>
+                                    <h5 class="font-bold text-blue-800">Tumbler Challenge</h5>
+                                    <p class="text-blue-700">Mulai gerakan bawa botol minum sendiri ke sekolah</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3 bg-white/70 p-4 rounded-xl">
+                                <span class="text-2xl">👨‍🏫</span>
+                                <div>
+                                    <h5 class="font-bold text-blue-800">Duta Kebersihan</h5>
+                                    <p class="text-blue-700">Jadi yang mengingatkan teman-teman tentang sampah</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="card lg:w-1/2 bg-gradient-to-br from-green-100 to-emerald-100 p-8 rounded-3xl text-left border-4 border-green-300 shadow-2xl">
+                        <div class="text-center mb-6">
+                            <div class="text-8xl mb-4">🏠</div>
+                            <h4 class="text-3xl font-bold text-green-800">Misimu di Rumah</h4>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex items-start space-x-3 bg-white/70 p-4 rounded-xl">
+                                <span class="text-2xl">👨‍👩‍👧‍👦</span>
+                                <div>
+                                    <h5 class="font-bold text-green-800">Guru Keluarga</h5>
+                                    <p class="text-green-700">Ajari Ayah, Ibu, Kakak, Adik tentang pilah sampah</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3 bg-white/70 p-4 rounded-xl">
+                                <span class="text-2xl">🗂️</span>
+                                <div>
+                                    <h5 class="font-bold text-green-800">Pilah dari Rumah</h5>
+                                    <p class="text-green-700">Ajak keluarga mulai memilah sampah sejak di rumah</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3 bg-white/70 p-4 rounded-xl">
+                                <span class="text-2xl">🏦</span>
+                                <div>
+                                    <h5 class="font-bold text-green-800">Bank Sampah</h5>
+                                    <p class="text-green-700">Kumpulkan botol plastik/kardus untuk disetor ke Bank
+                                        Sampah</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Tracker -->
+                <div class="bg-white p-8 rounded-3xl shadow-2xl mb-12 max-w-4xl mx-auto">
+                    <h4 class="text-2xl font-bold mb-6 text-purple-800">📊 Tracker Misi Pahlawan</h4>
+                    <div class="grid md:grid-cols-2 gap-6" id="mission-list">
+                        <!-- Missions will be injected by JS -->
+                    </div>
+                    <div class="mt-6 text-center">
+                        <div class="text-lg font-bold text-gray-700 mb-2">
+                            Progress: <span id="missionProgressText">0</span>/6 misi selesai 🎯
+                        </div>
+                        <div class="progress-bar-container">
+                            <div id="missionProgressBar" class="progress-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pledge Section -->
+                <div
+                    class="bg-gradient-to-r from-green-400 via-blue-500 to-purple-600 text-white p-12 rounded-3xl max-w-5xl mx-auto shadow-2xl relative overflow-hidden">
+                    <div class="absolute -top-10 -right-10 w-48 h-48 bg-white/20 rounded-full"></div>
+                    <div class="absolute -bottom-16 -left-16 w-64 h-64 bg-white/10 rounded-full"></div>
+                    <div class="relative z-10">
+                        <div class="text-8xl mb-6">🌟</div>
+                        <h4 class="text-4xl font-bold mb-6">Ikrar Pahlawan Bumi</h4>
+                        <div class="bg-white/20 backdrop-blur-md p-6 rounded-2xl mb-8">
+                            <p class="text-xl mb-4 italic leading-relaxed">
+                                "Kami, Pahlawan Bumi, berjanji akan mengurangi, menggunakan kembali,
+                                dan mendaur ulang sampah demi menjaga Bumi, rumah kita satu-satunya!
+                                Kami akan jadi teladan bagi teman dan keluarga untuk hidup lebih ramah lingkungan!"
+                            </p>
+                        </div>
+                        <button id="pledge-button"
+                            class="bg-white text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-blue-600 font-bold py-6 px-12 rounded-full text-2xl transform hover:scale-110 transition-all duration-300 shadow-2xl pulse-glow">
+                            ✋ Saya Berjanji Jadi Pahlawan Bumi! 🌍
+                        </button>
+                        <div id="pledge-status"
+                            class="mt-6 text-xl font-bold opacity-0 transition-opacity duration-500">
+                            🎉 Selamat! Kamu resmi jadi Pahlawan Bumi! 🎉
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gradient-to-r from-gray-800 to-gray-900 text-white py-12 px-4 mt-16">
+        <div class="container mx-auto text-center">
+            <div class="flex justify-center space-x-4 mb-6 text-4xl">
+                <span class="floating">🌍</span>
+                <span class="floating" style="animation-delay: 0.5s;">♻️</span>
+                <span class="floating" style="animation-delay: 1s;">🌱</span>
+                <span class="floating" style="animation-delay: 1.5s;">⭐</span>
+            </div>
+            <h3 class="text-2xl font-bold mb-4 text-green-400">Terima kasih, Pahlawan Bumi! 🦸‍♀️🦸‍♂️</h3>
+            <p class="text-lg mb-2">Ditenagai oleh AI ✨ Dibuat dengan ❤️ untuk Bumi</p>
+            <p class="text-sm text-gray-400">&copy; 2024 Pahlawan Bumi Edukasi - Bersama kita jaga Bumi! 🌟</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // =========================================================================
+            // GLOBAL STATE & VARIABLES
+            // =========================================================================
+            let apiKey = null; // Will be loaded from environment file
+            
+            // Load API key from environment file
+            async function loadApiKey() {
+                try {
+                    const response = await fetch('api.env');
+                    const envText = await response.text();
+                    const lines = envText.split('\n');
+                    
+                    for (const line of lines) {
+                        if (line.startsWith('GEMINI_API_KEY=')) {
+                            apiKey = line.substring('GEMINI_API_KEY='.length).trim();
+                            break;
+                        }
+                    }
+                    
+                    if (!apiKey) {
+                        console.error('API key not found in environment file');
+                        alert('API key not configured. Please check api.env file.');
+                    }
+                } catch (error) {
+                    console.error('Failed to load API key:', error);
+                    alert('Failed to load configuration. Please check if api.env file exists.');
+                }
+            }
+
+            // =========================================================================
+            // AUDIO SYSTEM & TTS
+            // =========================================================================
+            let audioContext;
+            let isMusicPlaying = false;
+            let musicOscillator;
+            const musicControl = document.getElementById('musicControl');
+            const musicIcon = document.getElementById('musicIcon');
+            let currentAudio = null;
+            let backgroundMusic = null;
+
+            // Custom music files - you can add your own music files here
+            const musicFiles = [
+                'assets/music/background1.mp3',
+                'assets/music/background2.mp3',
+                'assets/music/game-music.mp3'
+            ];
+            let currentMusicIndex = 0;
+
+            function initAudio() {
+                if (!audioContext) {
+                    try {
+                        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    } catch (e) {
+                        console.error('Web Audio API is not supported in this browser');
+                    }
+                }
+            }
+
+            function playSound(type, duration = 0.2) {
+                if (!audioContext) return;
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+
+                switch (type) {
+                    case 'correct':
+                        oscillator.type = 'sine';
+                        oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+                        gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + duration);
+                        break;
+                    case 'wrong':
+                        oscillator.type = 'square';
+                        oscillator.frequency.setValueAtTime(164.81, audioContext.currentTime); // E3
+                        gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + duration);
+                        break;
+                    case 'select':
+                        oscillator.type = 'triangle';
+                        oscillator.frequency.setValueAtTime(440.00, audioContext.currentTime); // A4
+                        gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 0.1);
+                        break;
+                    case 'win':
+                        oscillator.type = 'sine';
+                        oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+                        oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
+                        oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // G5
+                        gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 0.3);
+                        break;
+                }
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration);
+            }
+
+            // Function to load and play custom music files
+            function playCustomMusic() {
+                const musicFile = musicFiles[currentMusicIndex];
+                backgroundMusic = new Audio(musicFile);
+                backgroundMusic.loop = true;
+                backgroundMusic.volume = 0.3; // Adjust volume (0.0 to 1.0)
+
+                backgroundMusic.play().then(() => {
+                    isMusicPlaying = true;
+                    musicIcon.textContent = '🎵';
+                }).catch(error => {
+                    console.log('Could not play custom music, falling back to generated tones:', error);
+                    // Fallback to generated music if audio file fails
+                    playGeneratedMusic();
+                });
+
+                // When song ends, play next one
+                backgroundMusic.addEventListener('ended', () => {
+                    currentMusicIndex = (currentMusicIndex + 1) % musicFiles.length;
+                    if (isMusicPlaying) {
+                        playCustomMusic();
+                    }
+                });
+            }
+
+            // Function to play generated music (fallback)
+            function playGeneratedMusic() {
+                initAudio();
+                const notes = [261.63, 293.66, 329.63, 261.63]; // C4, D4, E4, C4
+                let noteIndex = 0;
+                musicOscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                musicOscillator.connect(gainNode).connect(audioContext.destination);
+                musicOscillator.type = 'sine';
+                gainNode.gain.value = 0.05;
+
+                const musicInterval = setInterval(() => {
+                    if (isMusicPlaying) {
+                        musicOscillator.frequency.setValueAtTime(notes[noteIndex % notes.length], audioContext.currentTime);
+                        noteIndex++;
+                    } else {
+                        clearInterval(musicInterval);
+                    }
+                }, 500);
+                musicOscillator.start();
+                isMusicPlaying = true;
+                musicIcon.textContent = '🎵';
+            }
+
+            function toggleMusic() {
+                if (isMusicPlaying) {
+                    // Stop current music
+                    if (backgroundMusic) {
+                        backgroundMusic.pause();
+                        backgroundMusic.currentTime = 0;
+                    }
+                    if (musicOscillator) {
+                        musicOscillator.stop();
+                    }
+                    isMusicPlaying = false;
+                    musicIcon.textContent = '🔇';
+                } else {
+                    // Try to play custom music first
+                    playCustomMusic();
+                }
+            }
+            musicControl.addEventListener('click', toggleMusic);
+
+            // =========================================================================
+            // UI & EFFECTS
+            // =========================================================================
+            const starField = document.getElementById('starField');
+            for (let i = 0; i < 50; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                const size = `${Math.random() * 2 + 1}px`;
+                star.style.width = size;
+                star.style.height = size;
+                star.style.animationDelay = `${Math.random() * 3}s`;
+                star.style.animationDuration = `${Math.random() * 2 + 3}s`;
+                starField.appendChild(star);
+            }
+
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+
+            function showCelebration(message) {
+                const celebrationEl = document.createElement('div');
+                celebrationEl.className = 'celebration';
+                celebrationEl.innerHTML = message;
+                document.body.appendChild(celebrationEl);
+                setTimeout(() => document.body.removeChild(celebrationEl), 2500);
+            }
+
+            function launchConfetti(origin = { x: 0.5, y: 0.5 }) {
+                confetti({
+                    particleCount: 150,
+                    spread: 180,
+                    origin: origin,
+                    colors: ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#ec4899']
+                });
+            }
+
+            // =========================================================================
+            // GEMINI API INTEGRATION
+            // =========================================================================
+
+            // --- Text Generation for Recycling Ideas ---
+            async function getRecycleIdeas(itemName, buttonEl, resultEl) {
+                buttonEl.disabled = true;
+                resultEl.innerHTML = '<div class="flex justify-center items-center"><div class="spinner"></div><p class="ml-4">Mencari ide ajaib...</p></div>';
+
+                const prompt = `Kamu adalah pemandu kerajinan yang kreatif dan ramah untuk anak-anak. Berikan tiga ide kerajinan tangan yang sederhana, aman, dan menyenangkan untuk mendaur ulang "${itemName}". Jelaskan setiap ide dalam satu atau dua kalimat pendek. Gunakan emoji di setiap judul ide. Format jawabanmu sebagai list bernomor.`;
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                const payload = { contents: [{ parts: [{ text: prompt }] }] };
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const data = await response.json();
+
+                    if (data.candidates && data.candidates.length > 0) {
+                        const text = data.candidates[0].content.parts[0].text;
+                        // Simple markdown to HTML conversion
+                        const htmlText = text
+                            .replace(/\n\d\./g, (match) => `</p><p class="mt-2">${match}`)
+                            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                        resultEl.innerHTML = `<p>${htmlText}</p>`;
+                    } else {
+                        resultEl.textContent = 'Oops! Gagal mendapatkan ide. Coba lagi nanti ya.';
+                    }
+                } catch (error) {
+                    console.error('Error fetching Gemini API:', error);
+                    resultEl.textContent = 'Terjadi kesalahan. Periksa koneksi internetmu.';
+                } finally {
+                    buttonEl.disabled = false;
+                }
+            }
+
+            // --- Text-to-Speech (TTS) ---
+            function base64ToArrayBuffer(base64) {
+                const binaryString = window.atob(base64);
+                const len = binaryString.length;
+                const bytes = new Uint8Array(len);
+                for (let i = 0; i < len; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+                return bytes.buffer;
+            }
+
+            function pcmToWav(pcmData, sampleRate) {
+                const header = new ArrayBuffer(44);
+                const view = new DataView(header);
+                const numSamples = pcmData.length;
+                const numChannels = 1;
+                const bitsPerSample = 16;
+                const blockAlign = numChannels * bitsPerSample / 8;
+                const byteRate = sampleRate * blockAlign;
+                const dataSize = numSamples * blockAlign;
+
+                // RIFF header
+                view.setUint32(0, 0x52494646, false); // "RIFF"
+                view.setUint32(4, 36 + dataSize, true);
+                view.setUint32(8, 0x57415645, false); // "WAVE"
+                // fmt sub-chunk
+                view.setUint32(12, 0x666d7420, false); // "fmt "
+                view.setUint32(16, 16, true); // Sub-chunk size
+                view.setUint16(20, 1, true); // Audio format (1 for PCM)
+                view.setUint16(22, numChannels, true);
+                view.setUint32(24, sampleRate, true);
+                view.setUint32(28, byteRate, true);
+                view.setUint16(32, blockAlign, true);
+                view.setUint16(34, bitsPerSample, true);
+                // data sub-chunk
+                view.setUint32(36, 0x64617461, false); // "data"
+                view.setUint32(40, dataSize, true);
+
+                const wavBytes = new Uint8Array(44 + dataSize);
+                wavBytes.set(new Uint8Array(header), 0);
+                wavBytes.set(new Uint8Array(pcmData.buffer), 44);
+
+                return new Blob([wavBytes], { type: 'audio/wav' });
+            }
+
+            async function playTTS(textToSpeak, buttonEl) {
+                if (currentAudio && !currentAudio.paused) {
+                    currentAudio.pause();
+                    currentAudio = null;
+                    document.querySelectorAll('.tts-button.loading').forEach(b => b.classList.remove('loading'));
+                    return;
+                }
+                initAudio();
+
+                buttonEl.classList.add('loading');
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+                const payload = {
+                    contents: [{ parts: [{ text: `Ucapkan dengan suara yang ramah dan jelas untuk anak-anak: ${textToSpeak}` }] }],
+                    generationConfig: {
+                        responseModalities: ["AUDIO"],
+                        speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Puck" } } }
+                    },
+                    model: "gemini-2.5-flash-preview-tts"
+                };
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const data = await response.json();
+
+                    const audioPart = data?.candidates?.[0]?.content?.parts?.[0];
+                    if (audioPart && audioPart.inlineData) {
+                        const sampleRateMatch = audioPart.inlineData.mimeType.match(/rate=(\d+)/);
+                        const sampleRate = sampleRateMatch ? parseInt(sampleRateMatch[1], 10) : 24000;
+                        const pcmData = base64ToArrayBuffer(audioPart.inlineData.data);
+                        const pcm16 = new Int16Array(pcmData);
+                        const wavBlob = pcmToWav(pcm16, sampleRate);
+                        const audioUrl = URL.createObjectURL(wavBlob);
+
+                        currentAudio = new Audio(audioUrl);
+                        currentAudio.play();
+                        currentAudio.onended = () => {
+                            buttonEl.classList.remove('loading');
+                            currentAudio = null;
+                        }
+                    } else {
+                        throw new Error("Audio data not found in response");
+                    }
+                } catch (error) {
+                    console.error('Error with TTS API:', error);
+                    buttonEl.classList.remove('loading');
+                    alert('Gagal memutar suara. Coba lagi nanti.');
+                }
+            }
+
+            // =========================================================================
+            // SECTION 1: WASTE CHART
+            // =========================================================================
+            const ctx = document.getElementById('wasteChart').getContext('2d');
+            const funFacts = {
+                'Plastik': 'Jumlahnya cukup untuk membungkus Candi Borobudur 10 kali!',
+                'Kertas': 'Kalau dijejerkan, bisa sampai ke Bulan!',
+                'Sisa Makanan': 'Beratnya sama dengan 50.000 gajah dewasa!',
+            };
+
+            let wasteChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Plastik', 'Kertas', 'Sisa Makanan'],
+                    datasets: [{
+                        label: 'Jumlah Sampah per Tahun (dalam juta ton)',
+                        data: [11.6, 11, 23],
+                        backgroundColor: [
+                            'rgba(59, 130, 246, 0.6)',
+                            'rgba(245, 158, 11, 0.6)',
+                            'rgba(16, 185, 129, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(59, 130, 246, 1)',
+                            'rgba(245, 158, 11, 1)',
+                            'rgba(16, 185, 129, 1)'
+                        ],
+                        borderWidth: 2,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                afterLabel: function (context) {
+                                    const label = context.label;
+                                    return funFacts[label] || '';
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 1000,
+                        easing: 'easeInOutQuart'
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Juta Ton per Tahun'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // =========================================================================
+            // SECTION 2.1: SORTING GAME
+            // =========================================================================
+            const gameItemsData = [
+                { name: 'Kulit Pisang', type: 'organik', emoji: '🍌' }, { name: 'Botol Plastik', type: 'anorganik', emoji: '🍾' },
+                { name: 'Baterai Bekas', type: 'b3', emoji: '🔋' }, { name: 'Sisa Sayur', type: 'organik', emoji: '🥬' },
+                { name: 'Kaleng Soda', type: 'anorganik', emoji: '🥫' }, { name: 'Kertas Bekas', type: 'anorganik', emoji: '📄' },
+                { name: 'Daun Kering', type: 'organik', emoji: '🍂' }, { name: 'Obat Kedaluwarsa', type: 'b3', emoji: '💊' },
+                { name: 'Kardus', type: 'anorganik', emoji: '📦' }
+            ];
+            let selectedGameItem = null;
+            let currentGameItems = [];
+            let streakCount = 0;
+            let gameTimer;
+            let timeLeft = 60;
+            let isGameActive = false;
+
+            const itemsContainer = document.getElementById('game-items');
+            const binsContainer = document.getElementById('game-bins');
+            const feedbackEl = document.getElementById('game-feedback');
+            const streakEl = document.getElementById('streakCounter');
+            const timeEl = document.getElementById('timeCounter');
+            const gameProgressBar = document.getElementById('gameProgressBar');
+
+            function setupSortingGame() {
+                streakCount = 0;
+                timeLeft = 60;
+                isGameActive = false;
+                if (gameTimer) clearInterval(gameTimer);
+
+                streakEl.textContent = streakCount;
+                timeEl.textContent = timeLeft;
+                gameProgressBar.style.width = '100%';
+                feedbackEl.textContent = "Klik sampah untuk memulai!";
+
+                itemsContainer.innerHTML = '';
+                currentGameItems = [...gameItemsData].sort(() => 0.5 - Math.random());
+
+                currentGameItems.forEach((item, index) => {
+                    const itemEl = document.createElement('div');
+                    itemEl.className = 'game-item bg-gradient-to-br from-white to-gray-100 p-4 rounded-2xl shadow-lg border-3 border-gray-300 flex flex-col items-center w-28 h-28 justify-center hover:shadow-xl';
+                    itemEl.dataset.index = index;
+                    itemEl.innerHTML = `<div class="text-4xl mb-1">${item.emoji}</div><p class="text-xs text-center font-bold text-gray-700">${item.name}</p>`;
+                    itemEl.addEventListener('click', () => selectGameItem(itemEl, index));
+                    itemsContainer.appendChild(itemEl);
+                });
+            }
+
+            function startGameTimer() {
+                isGameActive = true;
+                gameTimer = setInterval(() => {
+                    timeLeft--;
+                    timeEl.textContent = timeLeft;
+                    gameProgressBar.style.width = `${(timeLeft / 60) * 100}%`;
+                    if (timeLeft <= 0) {
+                        endGame('timeup');
+                    }
+                }, 1000);
+            }
+
+            function selectGameItem(el, index) {
+                if (!isGameActive) startGameTimer();
+                if (el.classList.contains('sorted')) return;
+
+                document.querySelectorAll('.game-item.selected').forEach(i => i.classList.remove('selected'));
+                el.classList.add('selected');
+                selectedGameItem = { el, index, type: currentGameItems[index].type };
+                playSound('select');
+            }
+
+            binsContainer.querySelectorAll('.bin').forEach(bin => {
+                bin.addEventListener('click', () => {
+                    if (!selectedGameItem || !isGameActive) return;
+
+                    const binType = bin.dataset.type;
+                    if (selectedGameItem.type === binType) {
+                        streakCount++;
+                        feedbackEl.innerHTML = `🎉 Benar! Hebat!`;
+                        feedbackEl.style.color = '#10b981';
+                        playSound('correct');
+
+                        selectedGameItem.el.classList.add('sorted', 'opacity-0', 'transform', 'scale-50');
+                        currentGameItems[selectedGameItem.index] = null;
+                    } else {
+                        streakCount = 0;
+                        feedbackEl.innerHTML = '❌ Oops! Coba lagi! 🤔';
+                        feedbackEl.style.color = '#ef4444';
+                        playSound('wrong');
+                        selectedGameItem.el.classList.add('animate-bounce');
+                        setTimeout(() => selectedGameItem.el.classList.remove('animate-bounce'), 500);
+                    }
+
+                    streakEl.textContent = streakCount;
+                    selectedGameItem.el.classList.remove('selected');
+                    selectedGameItem = null;
+
+                    if (currentGameItems.every(item => item === null)) {
+                        endGame('win');
+                    }
+                });
+            });
+
+            function endGame(reason) {
+                clearInterval(gameTimer);
+                isGameActive = false;
+                if (reason === 'win') {
+                    showCelebration(`🏆 Level Selesai! Kamu berhasil memilah semua sampah!`);
+                    playSound('win');
+                    launchConfetti();
+                } else {
+                    showCelebration(`⏰ Waktu habis! Ayo coba lagi!`);
+                }
+                setTimeout(setupSortingGame, 3000);
+            }
+
+            // =========================================================================
+            // SECTION 2.2: MEMORY GAME
+            // =========================================================================
+            const memoryItems = [
+                { emoji: '🍌', type: 'organik' }, { emoji: '🍾', type: 'anorganik' },
+                { emoji: '🔋', type: 'b3' }, { emoji: '🥬', type: 'organik' },
+                { emoji: '🥫', type: 'anorganik' }, { emoji: '💊', type: 'b3' }
+            ];
+            let memoryCards = [];
+            let flippedCards = [];
+            let lockBoard = false;
+            let memoryMoves = 0;
+            let memoryPairs = 0;
+
+            const memoryGameEl = document.getElementById('memory-game');
+            const memoryMovesEl = document.getElementById('memoryMoves');
+            const memoryPairsEl = document.getElementById('memoryPairs');
+
+            function setupMemoryGame() {
+                memoryGameEl.innerHTML = '';
+                memoryCards = [];
+                flippedCards = [];
+                lockBoard = false;
+                memoryMoves = 0;
+                memoryPairs = 0;
+                memoryMovesEl.textContent = memoryMoves;
+                memoryPairsEl.textContent = `${memoryPairs}/6`;
+
+                const cardData = [...memoryItems, ...memoryItems].sort(() => 0.5 - Math.random());
+
+                cardData.forEach((item) => {
+                    const card = document.createElement('div');
+                    card.className = 'memory-game-card';
+                    card.dataset.emoji = item.emoji;
+                    card.innerHTML = `<div class="front">❓</div><div class="back">${item.emoji}</div>`;
+                    card.addEventListener('click', () => flipMemoryCard(card));
+                    memoryGameEl.appendChild(card);
+                    memoryCards.push(card);
+                });
+            }
+
+            function flipMemoryCard(card) {
+                if (lockBoard || card.classList.contains('flipped')) return;
+
+                card.classList.add('flipped');
+                flippedCards.push(card);
+                playSound('select');
+
+                if (flippedCards.length === 2) {
+                    lockBoard = true;
+                    memoryMoves++;
+                    memoryMovesEl.textContent = memoryMoves;
+                    checkForMatch();
+                }
+            }
+
+            function checkForMatch() {
+                const [card1, card2] = flippedCards;
+                const isMatch = card1.dataset.emoji === card2.dataset.emoji;
+                isMatch ? disableCards() : unflipCards();
+            }
+
+            function disableCards() {
+                playSound('correct');
+                memoryPairs++;
+                memoryPairsEl.textContent = `${memoryPairs}/6`;
+
+                flippedCards.forEach(card => card.classList.add('matched'));
+                resetBoard();
+
+                if (memoryPairs === memoryItems.length) {
+                    setTimeout(() => {
+                        showCelebration('🧠 Memori Hebat! Game Selesai!');
+                        playSound('win');
+                        launchConfetti();
+                        setupMemoryGame();
+                    }, 1000);
+                }
+            }
+
+            function unflipCards() {
+                playSound('wrong');
+                setTimeout(() => {
+                    flippedCards.forEach(card => card.classList.remove('flipped'));
+                    resetBoard();
+                }, 1200);
+            }
+
+            function resetBoard() {
+                [flippedCards, lockBoard] = [[], false];
+            }
+
+            // =========================================================================
+            // SECTION 3: 3R TABS & GEMINI FEATURES
+            // =========================================================================
+            const tabContentData = {
+                reduce: {
+                    title: '📉 Reduce: Jurus Mengurangi Sampah',
+                    image: '🛍️',
+                    text: 'Artinya, kita mengurangi segala sesuatu yang bisa menjadi sampah. Semakin sedikit sampah yang kita hasilkan, semakin baik untuk Bumi!',
+                    tips: [
+                        'Bawa tas belanja sendiri saat ke pasar.',
+                        'Pilih produk dengan kemasan yang sedikit.',
+                        'Gunakan botol minum dan kotak makan sendiri.',
+                        'Matikan lampu dan air saat tidak dipakai (mengurangi sampah energi!).'
+                    ]
+                },
+                reuse: {
+                    title: '🔄 Reuse: Jurus Pakai Ulang',
+                    image: '🏺',
+                    text: 'Artinya, kita menggunakan kembali barang-barang yang masih bisa dipakai. Jangan langsung dibuang, ya!',
+                    tips: [
+                        'Gunakan toples selai bekas untuk menyimpan pensil.',
+                        'Ubah kaos bekas menjadi lap pembersih.',
+                        'Donasikan mainan dan baju yang sudah tidak terpakai.',
+                        'Gunakan kedua sisi kertas untuk menulis atau menggambar.'
+                    ]
+                },
+                recycle: {
+                    title: '♻️ Recycle: Jurus Daur Ulang Ajaib',
+                    image: '🏭',
+                    text: 'Artinya, kita mengubah sampah menjadi barang baru yang bermanfaat. Ini adalah proses ajaib yang butuh bantuan kita semua!',
+                    tips: [
+                        'Pisahkan sampah kertas, plastik, dan kaca.',
+                        'Kumpulkan botol plastik untuk disetor ke bank sampah.',
+                        'Buat kompos dari sampah sisa makanan dan daun.',
+                        'Cari tahu kerajinan tangan dari bahan daur ulang.'
+                    ],
+                    geminiFeature: true
+                }
+            };
+
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContentEl = document.getElementById('tab-content');
+
+            function switchTab(tabName) {
+                const content = tabContentData[tabName];
+                let geminiHtml = '';
+                if (content.geminiFeature) {
+                    geminiHtml = `
+                        <div class="gemini-feature-box">
+                            <h5 class="text-xl font-bold text-purple-800 mb-4">✨ Ide Daur Ulang Ajaib dari AI</h5>
+                            <p class="text-gray-600 mb-4">Punya barang bekas? Ketik di bawah dan biarkan AI memberikan ide kerajinan seru!</p>
+                            <div class="flex flex-col sm:flex-row gap-2">
+                                <input type="text" id="recycle-item-input" placeholder="Contoh: botol plastik, kardus..." class="flex-grow p-3 border-2 border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none">
+                                <button id="get-ideas-btn" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-lg font-bold hover:scale-105 transition-transform">Beri Aku Ide!</button>
+                            </div>
+                            <div id="recycle-ideas-result" class="mt-6 text-gray-700"></div>
+                        </div>
+                    `;
+                }
+
+                tabContentEl.innerHTML = `
+                    <div class="flex flex-col md:flex-row items-center gap-8 animate-fade-in">
+                        <div class="md:w-1/3 text-center">
+                            <div class="text-9xl mb-4 floating">${content.image}</div>
+                            <h4 class="text-3xl font-bold text-purple-700">${content.title}</h4>
+                        </div>
+                        <div class="md:w-2/3">
+                            <div class="flex items-center gap-4 mb-6">
+                                <p class="text-lg text-gray-700 flex-grow" id="tts-text-${tabName}">${content.text}</p>
+                                <button class="tts-button" data-text-id="tts-text-${tabName}" title="Dengarkan Teks">🔊</button>
+                            </div>
+                            <ul class="space-y-3">
+                                ${content.tips.map(tip => `
+                                    <li class="flex items-start">
+                                        <span class="text-green-500 font-bold text-2xl mr-3">✓</span>
+                                        <span class="text-gray-600">${tip}</span>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                    ${geminiHtml}
+                `;
+
+                tabButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tabName));
+
+                // Add event listeners for newly created elements
+                if (content.geminiFeature) {
+                    document.getElementById('get-ideas-btn').addEventListener('click', function () {
+                        const inputEl = document.getElementById('recycle-item-input');
+                        const resultEl = document.getElementById('recycle-ideas-result');
+                        if (inputEl.value) {
+                            getRecycleIdeas(inputEl.value, this, resultEl);
+                        } else {
+                            resultEl.textContent = 'Tolong masukkan nama barang dulu ya!';
+                        }
+                    });
+                }
+
+                document.querySelector('.tts-button').addEventListener('click', function () {
+                    const textId = this.dataset.textId;
+                    const textToSpeak = document.getElementById(textId).textContent;
+                    playTTS(textToSpeak, this);
+                });
+            }
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => switchTab(button.dataset.tab));
+            });
+
+            // =========================================================================
+            // SECTION 4.1: MISSION TRACKER
+            // =========================================================================
+            const missions = [
+                { id: 'mission1', text: 'Buat Pojok Pilah Sampah', emoji: '📦', color: 'blue' },
+                { id: 'mission2', text: 'Pakai Tumbler 1 Minggu', emoji: '🥤', color: 'green' },
+                { id: 'mission3', text: 'Ajari 3 Teman', emoji: '👨‍🏫', color: 'purple' },
+                { id: 'mission4', text: 'Ajari Keluarga', emoji: '👨‍👩‍👧‍👦', color: 'orange' },
+                { id: 'mission5', text: 'Pilah Sampah di Rumah', emoji: '🗂️', color: 'pink' },
+                { id: 'mission6', text: 'Kunjungi Bank Sampah', emoji: '🏦', color: 'indigo' }
+            ];
+
+            const missionListEl = document.getElementById('mission-list');
+            const missionProgressTextEl = document.getElementById('missionProgressText');
+            const missionProgressBarEl = document.getElementById('missionProgressBar');
+
+            function setupMissions() {
+                missionListEl.innerHTML = missions.map(mission => `
+                    <div class="flex items-center justify-between bg-${mission.color}-50 p-4 rounded-xl">
+                        <div class="flex items-center space-x-3">
+                            <input type="checkbox" id="${mission.id}" class="mission-checkbox text-${mission.color}-600">
+                            <label for="${mission.id}" class="font-semibold text-${mission.color}-800">${mission.text}</label>
+                        </div>
+                        <span class="text-2xl">${mission.emoji}</span>
+                    </div>
+                `).join('');
+
+                document.querySelectorAll('.mission-checkbox').forEach(checkbox => {
+                    checkbox.addEventListener('change', updateMissionProgress);
+                });
+            }
+
+            function updateMissionProgress(event) {
+                const checkedMissions = document.querySelectorAll('.mission-checkbox:checked');
+                const completedCount = checkedMissions.length;
+                const progress = (completedCount / missions.length) * 100;
+
+                missionProgressTextEl.textContent = `${completedCount}/${missions.length} misi selesai`;
+                missionProgressBarEl.style.width = `${progress}%`;
+
+                if (event.target.checked) {
+                    showCelebration('Misi Selesai! Kamu Hebat! 🎉');
+                    playSound('correct');
+                }
+
+                if (completedCount === missions.length) {
+                    setTimeout(() => {
+                        showCelebration('🎉 Semua Misi Selesai! Kamu Pahlawan Sejati!');
+                        playSound('win');
+                        launchConfetti();
+                    }, 500);
+                }
+            }
+
+            // =========================================================================
+            // SECTION 4.2: PLEDGE BUTTON
+            // =========================================================================
+            const pledgeButton = document.getElementById('pledge-button');
+            const pledgeStatus = document.getElementById('pledge-status');
+
+            pledgeButton.addEventListener('click', function () {
+                pledgeStatus.style.opacity = '1';
+                this.disabled = true;
+                this.textContent = '💖 Janji Telah Dibuat! 💖';
+                this.classList.remove('pulse-glow');
+                showCelebration('🌟 Ikrar diterima! Kamu HEBAT! 🌟');
+                playSound('win');
+                launchConfetti({ x: 0.5, y: 0.8 });
+            });
+
+
+            // =========================================================================
+            // INITIALIZE PAGE
+            // =========================================================================
+            async function initializePage() {
+                // Load API key first
+                await loadApiKey();
+                
+                setupSortingGame();
+                setupMemoryGame();
+                switchTab('reduce'); // Set initial tab
+                setupMissions();
+            }
+
+            initializePage();
+        });
+    </script>
+</body>
+
+</html>
