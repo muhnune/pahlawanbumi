@@ -431,6 +431,95 @@
         .tts-button.loading {
             animation: spin 1s linear infinite;
         }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            transform: scale(0.7) translateY(50px);
+            transition: transform 0.3s ease;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+        }
+
+        .modal.show .modal-content {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #6b7280;
+            transition: color 0.2s ease;
+        }
+
+        .modal-close:hover {
+            color: #ef4444;
+            transform: scale(1.1);
+        }
+
+        .litter-example {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            border-left: 4px solid;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .litter-example:hover {
+            transform: translateX(8px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .litter-example.organik {
+            border-left-color: #10b981;
+            background: linear-gradient(45deg, #dcfce7, #bbf7d0);
+        }
+
+        .litter-example.anorganik {
+            border-left-color: #3b82f6;
+            background: linear-gradient(45deg, #dbeafe, #bfdbfe);
+        }
+
+        .litter-example.b3 {
+            border-left-color: #ef4444;
+            background: linear-gradient(45deg, #fee2e2, #fecaca);
+        }
     </style>
 </head>
 
@@ -671,8 +760,8 @@
 
                 <!-- Waste Types Cards -->
                 <div class="grid md:grid-cols-3 gap-8 mb-12">
-                    <div
-                        class="card bg-gradient-to-br from-green-100 to-green-200 p-8 rounded-2xl text-center border-4 border-green-400 shadow-2xl">
+                    <div class="card bg-gradient-to-br from-green-100 to-green-200 p-8 rounded-2xl text-center border-4 border-green-400 shadow-2xl cursor-pointer hover:scale-105 transition-transform"
+                        onclick="showLitterModal('organik')">
                         <div class="text-8xl mb-4 bouncing">🍃</div>
                         <h4 class="text-3xl font-bold text-green-800 mb-2">Geng ORGANIK</h4>
                         <p class="text-green-700 text-lg leading-relaxed">
@@ -681,10 +770,13 @@
                         <div class="mt-4 text-sm text-green-600 font-semibold">
                             ✨ Bisa jadi kompos dalam 2-3 bulan!
                         </div>
+                        <div class="mt-3 text-xs text-green-500 italic">
+                            👆 Klik untuk lihat contoh sampah organik
+                        </div>
                     </div>
 
-                    <div
-                        class="card bg-gradient-to-br from-blue-100 to-blue-200 p-8 rounded-2xl text-center border-4 border-blue-400 shadow-2xl">
+                    <div class="card bg-gradient-to-br from-blue-100 to-blue-200 p-8 rounded-2xl text-center border-4 border-blue-400 shadow-2xl cursor-pointer hover:scale-105 transition-transform"
+                        onclick="showLitterModal('anorganik')" style="animation-delay: 0.5s;">
                         <div class="text-8xl mb-4 bouncing" style="animation-delay: 0.5s;">🤖</div>
                         <h4 class="text-3xl font-bold text-blue-800 mb-2">Geng ANORGANIK</h4>
                         <p class="text-blue-700 text-lg leading-relaxed">
@@ -693,10 +785,13 @@
                         <div class="mt-4 text-sm text-blue-600 font-semibold">
                             ⚡ Plastik butuh 500+ tahun untuk hancur!
                         </div>
+                        <div class="mt-3 text-xs text-blue-500 italic">
+                            👆 Klik untuk lihat contoh sampah anorganik
+                        </div>
                     </div>
 
-                    <div
-                        class="card bg-gradient-to-br from-red-100 to-red-200 p-8 rounded-2xl text-center border-4 border-red-400 shadow-2xl">
+                    <div class="card bg-gradient-to-br from-red-100 to-red-200 p-8 rounded-2xl text-center border-4 border-red-400 shadow-2xl cursor-pointer hover:scale-105 transition-transform"
+                        onclick="showLitterModal('b3')" style="animation-delay: 1s;">
                         <div class="text-8xl mb-4 bouncing" style="animation-delay: 1s;">☠️</div>
                         <h4 class="text-3xl font-bold text-red-800 mb-2">Geng B3</h4>
                         <p class="text-red-700 text-lg leading-relaxed">
@@ -704,6 +799,9 @@
                         </p>
                         <div class="mt-4 text-sm text-red-600 font-semibold">
                             🚨 Jangan dibuang sembarangan!
+                        </div>
+                        <div class="mt-3 text-xs text-red-500 italic">
+                            👆 Klik untuk lihat contoh sampah B3
                         </div>
                     </div>
                 </div>
@@ -923,6 +1021,16 @@
         </section>
     </main>
 
+    <!-- Modal for Litter Examples -->
+    <div id="litterModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeLitterModal()">&times;</button>
+            <div id="modalBody">
+                <!-- Content will be injected by JavaScript -->
+            </div>
+        </div>
+    </div>
+
     <footer class="bg-gradient-to-r from-gray-800 to-gray-900 text-white py-12 px-4 mt-16">
         <div class="container mx-auto text-center">
             <div class="flex justify-center space-x-4 mb-6 text-4xl">
@@ -945,6 +1053,64 @@
             // GLOBAL STATE & VARIABLES
             // =========================================================================
             // API key is now handled on the server side for security
+
+            // Data for litter examples (Global scope)
+            window.litterExamples = {
+                organik: {
+                    title: 'Geng ORGANIK',
+                    emoji: '🍃',
+                    color: 'green',
+                    description: 'Sampah yang berasal dari alam dan bisa membusuk dengan sendirinya!',
+                    examples: [
+                        { emoji: '🍌', name: 'Kulit Pisang', description: 'Bisa jadi kompos dalam 2-4 minggu' },
+                        { emoji: '🍎', name: 'Sisa Buah-buahan', description: 'Kaya nutrisi untuk tanaman' },
+                        { emoji: '🥬', name: 'Sisa Sayuran', description: 'Bagus untuk pupuk organik' },
+                        { emoji: '🍂', name: 'Daun Kering', description: 'Bahan kompos terbaik' },
+                        { emoji: '🐟', name: 'Sisa Ikan', description: 'Mengandung protein untuk tanah' },
+                        { emoji: '🍞', name: 'Roti Basi', description: 'Bisa diolah jadi kompos' },
+                        { emoji: '☕', name: 'Ampas Kopi', description: 'Pupuk alami yang bagus' },
+                        { emoji: '🥚', name: 'Kulit Telur', description: 'Mengandung kalsium untuk tanaman' },
+                        { emoji: '🌾', name: 'Sekam Padi', description: 'Bahan organik kaya silika' },
+                        { emoji: '🥥', name: 'Sabut Kelapa', description: 'Media tanam yang bagus' }
+                    ]
+                },
+                anorganik: {
+                    title: 'Geng ANORGANIK',
+                    emoji: '🤖',
+                    color: 'blue',
+                    description: 'Sampah buatan manusia yang sulit hancur tapi bisa didaur ulang!',
+                    examples: [
+                        { emoji: '🍾', name: 'Botol Plastik', description: 'Bisa jadi tas, pot, atau mainan' },
+                        { emoji: '🥫', name: 'Kaleng Bekas', description: 'Bahan logam untuk didaur ulang' },
+                        { emoji: '📄', name: 'Kertas Bekas', description: 'Bisa jadi kertas baru' },
+                        { emoji: '📦', name: 'Kardus', description: 'Bahan untuk kerajinan tangan' },
+                        { emoji: '🥤', name: 'Gelas Plastik', description: 'Bisa jadi pot tanaman mini' },
+                        { emoji: '🍽️', name: 'Piring Plastik', description: 'Bahan untuk kerajinan' },
+                        { emoji: '📱', name: 'HP Bekas', description: 'Komponen berharga untuk didaur ulang' },
+                        { emoji: '💻', name: 'Laptop Rusak', description: 'Mengandung logam mulia' },
+                        { emoji: '🔧', name: 'Alat Logam', description: 'Besi/aluminium bisa diolah lagi' },
+                        { emoji: '👟', name: 'Sepatu Bekas', description: 'Sol karet bisa didaur ulang' }
+                    ]
+                },
+                b3: {
+                    title: 'Geng B3 (Berbahaya & Beracun)',
+                    emoji: '☠️',
+                    color: 'red',
+                    description: 'Sampah yang berbahaya dan perlu penanganan khusus!',
+                    examples: [
+                        { emoji: '🔋', name: 'Baterai Bekas', description: 'Mengandung logam berat berbahaya' },
+                        { emoji: '💊', name: 'Obat Kedaluwarsa', description: 'Bisa mencemari air tanah' },
+                        { emoji: '🧴', name: 'Botol Pembersih', description: 'Sisa kimia berbahaya' },
+                        { emoji: '🎨', name: 'Cat & Thinner', description: 'Mengandung zat beracun' },
+                        { emoji: '💡', name: 'Lampu Neon', description: 'Mengandung merkuri' },
+                        { emoji: '🔧', name: 'Oli Bekas', description: 'Mencemari tanah dan air' },
+                        { emoji: '💉', name: 'Jarum Suntik', description: 'Berbahaya dan infeksius' },
+                        { emoji: '🧪', name: 'Bahan Kimia', description: 'Reaktif dan beracun' },
+                        { emoji: '☢️', name: 'Limbah Radioaktif', description: 'Radiasi berbahaya' },
+                        { emoji: '🚬', name: 'Puntung Rokok', description: 'Mengandung nikotin beracun' }
+                    ]
+                }
+            };
 
             // =========================================================================
             // AUDIO SYSTEM & TTS
@@ -975,7 +1141,7 @@
                 }
             }
 
-            function playSound(type, duration = 0.2) {
+            window.playSound = function (type, duration = 0.2) {
                 if (!audioContext) return;
                 const oscillator = audioContext.createOscillator();
                 const gainNode = audioContext.createGain();
@@ -1116,6 +1282,80 @@
                     colors: ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#ec4899']
                 });
             }
+
+            // =========================================================================
+            // MODAL FUNCTIONS FOR LITTER EXAMPLES (GLOBAL SCOPE)
+            // =========================================================================
+            window.showLitterModal = function (type) {
+                const modal = document.getElementById('litterModal');
+                const modalBody = document.getElementById('modalBody');
+                const data = window.litterExamples[type];
+
+                if (!data) return;
+
+                window.playSound('select');
+
+                const colorClasses = {
+                    green: 'text-green-800 bg-green-100 border-green-300',
+                    blue: 'text-blue-800 bg-blue-100 border-blue-300',
+                    red: 'text-red-800 bg-red-100 border-red-300'
+                };
+
+                modalBody.innerHTML = `
+                    <div class="text-center mb-6">
+                        <div class="text-8xl mb-4 floating">${data.emoji}</div>
+                        <h3 class="text-3xl font-bold ${colorClasses[data.color].split(' ')[0]} mb-3">${data.title}</h3>
+                        <p class="text-lg text-gray-600 italic">${data.description}</p>
+                    </div>
+                    
+                    <div class="grid gap-3 max-h-96 overflow-y-auto">
+                        ${data.examples.map(example => `
+                            <div class="litter-example ${type}" onclick="window.playSound('select')">
+                                <div class="text-3xl mr-4">${example.emoji}</div>
+                                <div class="flex-grow">
+                                    <h4 class="font-bold text-lg ${colorClasses[data.color].split(' ')[0]}">${example.name}</h4>
+                                    <p class="text-sm text-gray-600">${example.description}</p>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="mt-6 text-center">
+                        <div class="p-4 rounded-xl ${colorClasses[data.color]} border-2">
+                            <p class="font-semibold">
+                                ${type === 'organik' ? '🌱 Tips: Kumpulkan sampah organik untuk dibuat kompos!' :
+                        type === 'anorganik' ? '♻️ Tips: Bersihkan dulu sebelum didaur ulang!' :
+                            '⚠️ Penting: Jangan buang sembarangan! Serahkan ke tempat khusus!'}
+                            </p>
+                        </div>
+                    </div>
+                `;
+
+                modal.classList.add('show');
+                document.body.style.overflow = 'hidden'; // Prevent scrolling
+            }
+
+            window.closeLitterModal = function () {
+                const modal = document.getElementById('litterModal');
+                modal.classList.remove('show');
+                document.body.style.overflow = 'auto'; // Restore scrolling
+                window.playSound('select');
+            }
+
+            // Close modal when clicking outside
+            document.addEventListener('click', function (event) {
+                const modal = document.getElementById('litterModal');
+                if (event.target === modal) {
+                    closeLitterModal();
+                }
+            });
+
+            // Close modal with Escape key
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape') {
+                    closeLitterModal();
+                }
+            });
 
             // =========================================================================
             // GEMINI API INTEGRATION
