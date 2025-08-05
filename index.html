@@ -944,31 +944,7 @@
             // =========================================================================
             // GLOBAL STATE & VARIABLES
             // =========================================================================
-            let apiKey = null; // Will be loaded from environment file
-
-            // Load API key from environment file
-            async function loadApiKey() {
-                try {
-                    const response = await fetch('api.env');
-                    const envText = await response.text();
-                    const lines = envText.split('\n');
-
-                    for (const line of lines) {
-                        if (line.startsWith('GEMINI_API_KEY=')) {
-                            apiKey = line.substring('GEMINI_API_KEY='.length).trim();
-                            break;
-                        }
-                    }
-
-                    if (!apiKey) {
-                        console.error('API key not found in environment file');
-                        alert('API key not configured. Please check api.env file.');
-                    }
-                } catch (error) {
-                    console.error('Failed to load API key:', error);
-                    alert('Failed to load configuration. Please check if api.env file exists.');
-                }
-            }
+            // API key is now handled on the server side for security
 
             // =========================================================================
             // AUDIO SYSTEM & TTS
@@ -1151,15 +1127,20 @@
                 resultEl.innerHTML = '<div class="flex justify-center items-center"><div class="spinner"></div><p class="ml-4">Mencari ide ajaib...</p></div>';
 
                 const prompt = `Kamu adalah pemandu kerajinan yang kreatif dan ramah untuk anak-anak. Berikan tiga ide kerajinan tangan yang sederhana, aman, dan menyenangkan untuk mendaur ulang "${itemName}". Jelaskan setiap ide dalam satu atau dua kalimat pendek. Gunakan emoji di setiap judul ide. Format jawabanmu sebagai list bernomor.`;
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-                const payload = { contents: [{ parts: [{ text: prompt }] }] };
 
                 try {
-                    const response = await fetch(apiUrl, {
+                    const response = await fetch('/api/panggil-gemini', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ prompt: prompt })
                     });
+
+                    if (!response.ok) {
+                        throw new Error(`Server responded with status: ${response.status}`);
+                    }
+
                     const data = await response.json();
 
                     if (data.candidates && data.candidates.length > 0) {
@@ -1173,7 +1154,7 @@
                         resultEl.textContent = 'Oops! Gagal mendapatkan ide. Coba lagi nanti ya.';
                     }
                 } catch (error) {
-                    console.error('Error fetching Gemini API:', error);
+                    console.error('Error calling serverless function:', error);
                     resultEl.textContent = 'Terjadi kesalahan. Periksa koneksi internetmu.';
                 } finally {
                     buttonEl.disabled = false;
@@ -1235,22 +1216,20 @@
                 initAudio();
 
                 buttonEl.classList.add('loading');
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
-                const payload = {
-                    contents: [{ parts: [{ text: `Ucapkan dengan suara yang ramah dan jelas untuk anak-anak: ${textToSpeak}` }] }],
-                    generationConfig: {
-                        responseModalities: ["AUDIO"],
-                        speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Puck" } } }
-                    },
-                    model: "gemini-2.5-flash-preview-tts"
-                };
 
                 try {
-                    const response = await fetch(apiUrl, {
+                    const response = await fetch('/api/panggil-tts', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ text: textToSpeak })
                     });
+
+                    if (!response.ok) {
+                        throw new Error(`Server responded with status: ${response.status}`);
+                    }
+
                     const data = await response.json();
 
                     const audioPart = data?.candidates?.[0]?.content?.parts?.[0];
@@ -1272,7 +1251,7 @@
                         throw new Error("Audio data not found in response");
                     }
                 } catch (error) {
-                    console.error('Error with TTS API:', error);
+                    console.error('Error with TTS serverless function:', error);
                     buttonEl.classList.remove('loading');
                     alert('Gagal memutar suara. Coba lagi nanti.');
                 }
@@ -1732,9 +1711,7 @@
             // INITIALIZE PAGE
             // =========================================================================
             async function initializePage() {
-                // Load API key first
-                await loadApiKey();
-
+                // API key is now handled securely on the server side
                 setupSortingGame();
                 setupMemoryGame();
                 switchTab('reduce'); // Set initial tab
