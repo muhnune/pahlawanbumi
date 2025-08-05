@@ -838,21 +838,21 @@
             // GLOBAL STATE & VARIABLES
             // =========================================================================
             let apiKey = null; // Will be loaded from environment file
-            
+
             // Load API key from environment file
             async function loadApiKey() {
                 try {
                     const response = await fetch('api.env');
                     const envText = await response.text();
                     const lines = envText.split('\n');
-                    
+
                     for (const line of lines) {
                         if (line.startsWith('GEMINI_API_KEY=')) {
                             apiKey = line.substring('GEMINI_API_KEY='.length).trim();
                             break;
                         }
                     }
-                    
+
                     if (!apiKey) {
                         console.error('API key not found in environment file');
                         alert('API key not configured. Please check api.env file.');
@@ -1627,7 +1627,7 @@
             async function initializePage() {
                 // Load API key first
                 await loadApiKey();
-                
+
                 setupSortingGame();
                 setupMemoryGame();
                 switchTab('reduce'); // Set initial tab
